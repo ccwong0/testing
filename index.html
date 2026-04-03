@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Registration System</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --gray: #6b7280;
+      --light-gray: #f8fafc;
+      --border: #e2e8f0;
+      --success: #10b981;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #1e2937;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 8px; color: #0f172a; font-size: 2.3rem; }
+    .subtitle { text-align: center; color: var(--gray); margin-bottom: 30px; font-size: 1.1rem; }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 30px;
+    }
+
+    /* Form Card */
+    .form-card, .table-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 35px;
+      border: 1px solid var(--border);
+    }
+
+    .form-card h2, .table-card h2 { margin-bottom: 25px; color: #1e2937; font-size: 1.5rem; }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+      outline: none;
+    }
+
+    .required::after { content: ' *'; color: #ef4444; }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #e2e8f0; color: #475569; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-success { background: var(--success); color: white; }
+
+    /* Filter Section */
+    .filter-section {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid var(--border);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 15px;
+      align-items: end;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    tr:hover { background: #f8fafc; }
+
+    .actions button {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      margin: 2px;
+    }
+
+    .count { font-weight: bold; color: var(--primary); }
+
+    @media (max-width: 992px) {
+      .main-content { grid-template-columns: 1fr; }
+      .filter-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Customer Registration System</h1>
+    <p class="subtitle">Professional Client Management</p>
+
+    <div class="main-content">
+
+      <!-- Form -->
+      <div class="form-card">
+        <h2>Add New Customer</h2>
+        <form id="customerForm">
+          <div class="form-group">
+            <label class="required">Full Name</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="form-group">
+            <label class="required">Email Address</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phone">
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" id="company">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <select id="gender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea id="notes" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Customer</button>
+          <button type="button" onclick="clearForm()" class="btn btn-secondary">Clear</button>
+        </form>
+      </div>
+
+      <!-- Table + Filters -->
+      <div class="table-card">
+        <h2>Saved Customers (<span id="count" class="count">0</span>)</h2>
+
+        <!-- Date Filter -->
+        <div class="filter-section">
+          <h3 style="margin-bottom:12px;">Filter by Date Added</h3>
+          <div class="filter-grid">
+            <div>
+              <label>From Date</label>
+              <input type="date" id="fromDate">
+            </div>
+            <div>
+              <label>To Date</label>
+              <input type="date" id="toDate">
+            </div>
+            <div>
+              <button onclick="applyFilter()" class="btn btn-primary" style="width:100%;">Apply Filter</button>
+              <button onclick="clearFilter()" class="btn btn-secondary" style="width:100%; margin-top:8px;">Clear Filter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-header">
+          <div>
+            <button onclick="exportToCSV()" class="btn btn-primary">Export CSV</button>
+            <button onclick="deleteInDateRange()" class="btn btn-danger" id="deleteRangeBtn" style="display:none;">
+              Delete in Date Range
+            </button>
+          </div>
+        </div>
+
+        <table id="customerTable">
+          <thead>
+            <tr>
+              <th>Date Added</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Company</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allCustomers = [];
+    let currentFilter = null;
+
+    function loadCustomers() {
+      allCustomers = JSON.parse(localStorage.getItem('customers')) || [];
+      renderTable(allCustomers);
+    }
+
+    function renderTable(customers) {
+      const tbody = document.querySelector('#customerTable tbody');
+      tbody.innerHTML = '';
+      document.getElementById('count').textContent = customers.length;
+
+      if (customers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:#64748b;">No customers found</td></tr>`;
+        return;
+      }
+
+      customers.forEach((customer, index) => {
+        const globalIndex = allCustomers.findIndex(c => c.dateAdded === customer.dateAdded && c.email === customer.email);
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${customer.dateAdded}</td>
+          <td>${customer.name}</td>
+          <td>${customer.email}</td>
+          <td>${customer.phone || '-'}</td>
+          <td>${customer.company || '-'}</td>
+          <td class="actions">
+            <button onclick="deleteCustomer(${globalIndex})" class="btn btn-danger" style="padding:6px 12px;">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Apply Date Filter
+    function applyFilter() {
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+
+      if (!fromDate && !toDate) {
+        clearFilter();
+        return;
+      }
+
+      currentFilter = { fromDate, toDate };
+
+      let filtered = allCustomers.filter(customer => {
+        const customerDate = new Date(customer.dateAdded.split(',')[0]); // Take only date part
+        let match = true;
+
+        if (fromDate) {
+          match = match && customerDate >= new Date(fromDate);
+        }
+        if (toDate) {
+          match = match && customerDate <= new Date(toDate);
+        }
+        return match;
+      });
+
+      renderTable(filtered);
+      document.getElementById('deleteRangeBtn').style.display = 'inline-block';
+    }
+
+    function clearFilter() {
+      currentFilter = null;
+      document.getElementById('fromDate').value = '';
+      document.getElementById('toDate').value = '';
+      document.getElementById('deleteRangeBtn').style.display = 'none';
+      renderTable(allCustomers);
+    }
+
+    // Delete single customer
+    function deleteCustomer(index) {
+      if (confirm('Delete this customer?')) {
+        allCustomers.splice(index, 1);
+        localStorage.setItem('customers', JSON.stringify(allCustomers));
+        loadCustomers();
+        if (currentFilter) applyFilter();
+      }
+    }
+
+    // Delete all customers in current date range
+    function deleteInDateRange() {
+      if (!currentFilter) return;
+
+      const fromStr = document.getElementById('fromDate').value;
+      const toStr = document.getElementById('toDate').value;
+
+      let message = `Delete ALL customers `;
+      if (fromStr && toStr) message += `from ${fromStr} to ${toStr}`;
+      else if (fromStr) message += `from ${fromStr} onwards`;
+      else if (toStr) message += `up to ${toStr}`;
+
+      if (confirm(message + `?\n\nThis action cannot be undone!`)) {
+        let filteredIndices = [];
+
+        allCustomers.forEach((customer, index) => {
+          const customerDate = new Date(customer.dateAdded.split(',')[0]);
+          let match = true;
+          if (fromStr) match = match && customerDate >= new Date(fromStr);
+          if (toStr) match = match && customerDate <= new Date(toStr);
+          if (match) filteredIndices.push(index);
+        });
+
+        // Delete from highest index to lowest to avoid shifting
+        filteredIndices.sort((a,b)=>b-a).forEach(index => {
+          allCustomers.splice(index, 1);
+        });
+
+        localStorage.setItem('customers', JSON.stringify(allCustomers));
+        alert('Customers in selected date range have been deleted.');
+        loadCustomers();
+        clearFilter();
+      }
+    }
+
+    // Rest of functions (save, export, clearForm, clearAllData) remain the same
+    document.getElementById('customerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const customer = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        company: document.getElementById('company').value.trim(),
+        dob: document.getElementById('dob').value,
+        gender: document.getElementById('gender').value,
+        notes: document.getElementById('notes').value.trim(),
+        dateAdded: new Date().toLocaleString()
+      };
+
+      allCustomers.push(customer);
+      localStorage.setItem('customers', JSON.stringify(allCustomers));
+
+      alert('✅ Customer saved successfully!');
+      clearForm();
+      loadCustomers();
+    });
+
+    function clearForm() {
+      document.getElementById('customerForm').reset();
+    }
+
+    function exportToCSV() {
+      const dataToExport = currentFilter ? 
+        document.querySelectorAll('#customerTable tbody tr').length > 0 ? 
+        allCustomers.filter(c => {
+          // Simplified: export currently visible data
+          const from = document.getElementById('fromDate').value;
+          const to = document.getElementById('toDate').value;
+          const d = new Date(c.dateAdded.split(',')[0]);
+          return (!from || d >= new Date(from)) && (!to || d <= new Date(to));
+        }) : allCustomers : allCustomers;
+
+      if (dataToExport.length === 0) {
+        alert('No data to export!');
+        return;
+      }
+
+      let csv = "Date Added,Name,Email,Phone,Company,DOB,Gender,Notes\n";
+      dataToExport.forEach(c => {
+        csv += `"${c.dateAdded}","${c.name}","${c.email}","${c.phone||''}","${c.company||''}","${c.dob||''}","${c.gender||''}","${(c.notes||'').replace(/"/g,'""')}"\n`;
+      });
+
+      const link = document.createElement("a");
+      link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      link.download = `customers_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    }
+
+    function clearAllData() {
+      if (confirm('⚠️ Delete ALL customer data permanently?')) {
+        localStorage.removeItem('customers');
+        allCustomers = [];
+        loadCustomers();
+        clearFilter();
+      }
+    }
+
+    // Initialize
+    window.onload = loadCustomers;
+  </script>
+</body>
+</html>
